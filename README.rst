@@ -10,6 +10,12 @@ Description
 | It menaces with spikes of crud and is decorated with hanging rings of fail.
 | On the program is a picture of bugs in python.
 
+Dependencies
+============
+| python 3.x
+| requests
+| docopt
+
 Innstalation
 ============
 | cp kittypack.py some/where/in/$PATH/kittypack  # chmod/chown as needed
