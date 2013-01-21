@@ -13,8 +13,9 @@ Description
 Dependencies
 ============
 | python 3.x
-| requests
-| docopt
+| python-requests
+| python-docopt
+| python-yaml
 
 Innstalation
 ============
