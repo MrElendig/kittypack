@@ -32,22 +32,14 @@ import sys
 import docopt
 import yaml
 import collections
-from urllib.parse import urlencode
 
 
-def search_db(pkg, **args):
-    params = {"name": pkg}
-    if "repo" in args:
-        params["repo"] = args["repo"]
-    if "arch" in args:
-        params["arch"] = args["arch"]
-
-    url = config["search_url"].format(params=urlencode(params))
-    req = requests.get(url)
+def search_db(url, params):
+    req = requests.get(url, params=params)
     if req.status_code == requests.codes.ok:
         fields = ("parsed", "raw", "url")
         Package = collections.namedtuple("Package", fields)
-        return Package(parsed=req.json(), raw=req.text, url=url)
+        return Package(parsed=req.json(), raw=req.text, url=req.url)
     else:
         req.raise_for_status()
 
@@ -80,6 +72,7 @@ if __name__ == "__main__":
         sys.exit(3)
 
     params = {}
+    params['name'] = args["<pkg>"]
     if args["--repository"]:
         try:
             params["repo"] = config["repos"][args["--repository".lower()]]["r_name"]
@@ -95,7 +88,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
     try:
-        resp = search_db(args["<pkg>"], **params)
+        resp = search_db(config["search_url"], params)
     except requests.exceptions.HTTPError as e:
         print("Error recieved from remote:", file=sys.stderr)
         print(e.args)
