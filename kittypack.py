@@ -61,7 +61,7 @@ def format_output(pkg, args):
 def read_config(path=None):
     path = "/etc/kittypack.conf" if path is None else path
     with open(path, "r") as fd:
-        config = yaml.load(fd)
+        config = yaml.safe_load(fd)
     return config
 
 
