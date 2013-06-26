@@ -17,10 +17,10 @@ Dependencies
 | python-docopt
 | python-yaml
 
-Innstalation
+Instalation
 ============
-| cp kittypack.py some/where/in/$PATH/kittypack  # chmod/chown as needed
-| cp kittypack.conf /etc/kittypack.conf  # or just use the -c flag
+| python3 setup.py install
+| or better, use your distributions build system
 
 Usage
 =====
