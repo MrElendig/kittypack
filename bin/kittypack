@@ -50,8 +50,7 @@ def format_output(pkg, args):
     return out.format(**pkg)
 
 
-def read_config(path=None):
-    path = "/etc/kittypack.conf" if path is None else path
+def read_config(path):
     with open(path, "r") as fd:
         config = yaml.safe_load(fd)
     return config
@@ -70,8 +69,13 @@ def sort_by_repo(pkgs, conf):
 
 if __name__ == "__main__":
     args = docopt.docopt(__doc__)  # will sys.exit(1) if invalid usage
+
+    if args["--config"]:
+        config_path = args["--config"]
+    else:
+        config_path = "/etc/kittypack.conf"
     try:
-        config = read_config(args["--config"])
+        config = read_config(config_path)
     except OSError as e:
         print("Could not read the configuration file:\n  {}".format(e),
               file=sys.stderr)
