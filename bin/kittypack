@@ -58,6 +58,12 @@ def read_config(path=None):
 
 
 def sort_by_repo(pkgs, conf):
+    """ Sorts packages based on the repo sort index
+    :param pkgs: packages to be sorted
+    :type pkgs: any iterable
+    :param conf: configuration mapping
+    :returns list: sorted list of packages
+    """
     sortkey = lambda pkg: conf["repos"][pkg["repo"]]["s_idx"]
     return sorted(pkgs, key=sortkey)
 
