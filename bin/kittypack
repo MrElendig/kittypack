@@ -75,16 +75,21 @@ if __name__ == "__main__":
     params['name'] = args["<pkg>"]
     if args["--repository"]:
         try:
-            params["repo"] = config["repos"][args["--repository".lower()]]["r_name"]
+            repo = args["--repository".lower()]
+            params["repo"] = config["repos"][repo]["r_name"]
         except KeyError:
-            print("error: Not a valid repository", file=sys.stderr)
+            error_text = "error: {repo} is not a valid repository".format(
+                repo=args["--repository"])
+            print(error_text, file=sys.stderr)
             sys.exit(1)
 
     if args["--architecture"]:
         if args["--architecture"] in config["archs"]:
             params["arch"] = args["--architecture"]
         else:
-            print("error: Not a valid architecture", file=sys.stderr)
+            error_text = "error: {arch} is not a valid architecture".format(
+                arch=args["--architecture"])
+            print(error_text, file=sys.stderr)
             sys.exit(1)
 
     try:
