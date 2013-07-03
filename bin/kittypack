@@ -109,18 +109,18 @@ if __name__ == "__main__":
         print(e.args)
         sys.exit(4)
 
-    if resp.parsed["valid"]:
-        if args["--json"]:
-            print(resp.raw)
-        else:
-            if not resp.parsed["results"]:
-                print("No results found", file=sys.stderr)
-                sys.exit(1)
-            pkgs = sort_by_repo(resp.parsed["results"], config)
-            print("\n\n".join(format_output(pkg, args) for pkg in pkgs))
-    else:
+    if not resp.parsed["valid"]:
         err = ("Hmm, archlinux.org didn't like my search.\n"
                "Url poked:  {}\n"
                "Json returned:  {}")
         print(err.format(resp.url, resp.raw), file=sys.stderr)
         sys.exit(4)
+
+    if args["--json"]:
+        print(resp.raw)
+    else:
+        if not resp.parsed["results"]:
+            print("No results found", file=sys.stderr)
+            sys.exit(1)
+        pkgs = sort_by_repo(resp.parsed["results"], config)
+        print("\n\n".join(format_output(pkg, args) for pkg in pkgs))
