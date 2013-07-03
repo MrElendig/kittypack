@@ -34,7 +34,7 @@ import yaml
 import collections
 
 
-def search_db(url, params):
+def query_remote(url, params):
     req = requests.get(url, params=params)
     if req.status_code == requests.codes.ok:
         fields = ("parsed", "raw", "url")
@@ -103,7 +103,7 @@ if __name__ == "__main__":
             sys.exit(1)
 
     try:
-        resp = search_db(config["search_url"], params)
+        resp = query_remote(config["search_url"], params)
     except requests.exceptions.HTTPError as e:
         print("Error recieved from remote:", file=sys.stderr)
         print(e.args)
