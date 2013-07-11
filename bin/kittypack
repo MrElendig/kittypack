@@ -35,6 +35,12 @@ import collections
 
 
 def query_remote(url, params):
+    """ Queries remote db and parses the return
+    :params url: fully qualified url to remote
+    :params params: parameters to give to the remote
+    :type params: dict
+    :returns namedtuple: (parsed=dict, raw=string, url=string)
+    """
     req = requests.get(url, params=params)
     if req.status_code == requests.codes.ok:
         fields = ("parsed", "raw", "url")
