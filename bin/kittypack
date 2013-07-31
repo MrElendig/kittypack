@@ -32,6 +32,68 @@ import sys
 import docopt
 import yaml
 import collections
+import curses
+
+
+def check_term_colours(stream):
+    if not hasattr(stream, "isatty"):
+        return False
+    if not stream.isatty():
+        return False
+    curses.setupterm()
+    colour_count = curses.tigetnum("colors")
+    if colour_count <=2:
+        return False
+    return colour_count
+
+
+class Colourize():
+    def __init__(self, use_colour):
+        self.use_colour = use_colour
+        self._fg = {
+            "black": 30,
+            "red": 31,
+            "green": 32,
+            "yellow": 33,
+            "blue": 34,
+            "magenta": 35,
+            "cyan": 36,
+            "white": 37,
+            "default": 39
+        }
+        self._bg = {
+            "black": 40,
+            "red": 41,
+            "green": 42,
+            "yellow": 43,
+            "blue": 44,
+            "magenta": 45,
+            "cyan": 46,
+            "white": 47,
+            "default": 49
+        }
+        self._reset = 0
+        self._bold = 1
+
+
+    def wrap(self, text, format):
+        """ Wrap text in colour codes acording to format
+        :param text: text to wrap
+        :param format: (bold, fg, bg)
+
+        bold: bool
+        fg/bg: one of ["black", "red", "green", "yellow", "blue", "magneta",
+                    "cyan", "while", "default"]
+        """
+        if not self.use_colour:
+            return text
+        out = "\x1b[{attr};{fg};{bg}m{text}\x1b[0m".format(
+            attr=self._bold if format[0] else self._reset,
+            fg=self._fg[format[1]],
+            bg=self._bg[format[2]],
+            text=text
+        )
+        return out
 
 
 def query_remote(url, params):
@@ -50,10 +112,25 @@ def query_remote(url, params):
         req.raise_for_status()
 
 
-def format_output(pkg, args):
-    out = ("{repo}/{arch}/{pkgname}  {epoch}:{pkgver}-{pkgrel}\n"
+def format_output(pkg, colourizer):
+    template = ("{repo}/{arch}/{pkgname}  {epoch}:{pkgver}-{pkgrel}{ood}\n"
            "  Updated: {last_update}  Built: {build_date}")
-    return out.format(**pkg)
+    data = {}
+    data["repo"] = colourizer.wrap(pkg["repo"], (1, "magenta", "default"))
+    data["arch"] = colourizer.wrap(pkg["arch"], (1, "yellow", "default"))
+    data["pkgname"] = colourizer.wrap(pkg["pkgname"], (1, "green", "default"))
+    if pkg["flag_date"]:
+        ver_colour = "red"
+        data["ood"] = colourizer.wrap(" <!>", (0, ver_colour, "default"))
+    else:
+        ver_colour = "green"
+        data["ood"] = ""
+    for itm in ("epoch", "pkgver", "pkgrel"):
+        data[itm] = colourizer.wrap(pkg[itm], (1, ver_colour, "default"))
+    data["last_update"] = pkg["last_update"]
+    data["build_date"] = pkg["build_date"]
+    return template.format(**data)
+
 
 
 def read_config(path):
@@ -129,4 +206,5 @@ if __name__ == "__main__":
             print("No results found", file=sys.stderr)
             sys.exit(1)
         pkgs = sort_by_repo(resp.parsed["results"], config)
-        print("\n\n".join(format_output(pkg, args) for pkg in pkgs))
+        colourizer = Colourize(check_term_colours(sys.stdout))
+        print("\n\n".join(format_output(pkg, colourizer) for pkg in pkgs))
