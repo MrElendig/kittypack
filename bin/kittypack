@@ -113,6 +113,11 @@ def query_remote(url, params):
 
 
 def format_output(pkg, colourizer):
+    """ Creates a output string from a package
+    :parmans pkg: dict like object describing a package
+    :params colourizer: instance of Colourize class
+    :returns string
+    """
     template = ("{repo}/{arch}/{pkgname}  {epoch}:{pkgver}-{pkgrel}{ood}\n"
            "  Updated: {last_update}  Built: {build_date}")
     data = {}
