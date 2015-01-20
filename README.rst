@@ -16,6 +16,7 @@ Dependencies
 | python-requests
 | python-docopt
 | python-yaml
+| python-curtsies
 
 Instalation
 ============
