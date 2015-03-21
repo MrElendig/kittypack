@@ -22,9 +22,10 @@ Usage:  kittypack [options] <pkg>
 Options:
   -r, --repository=<repo>     Search only in <repo>
   -a, --architecture=<arch>   Search only in <arch>
+  -f, --format=<fstring>      Use custom format string
   -j, --json                  Print the raw json
-  -h, --help                  Show this screen
   -c, --config=<config>       Path to the config [default: /etc/kittypack.conf]
+  -h, --help                  Show this screen
 """
 
 import requests
@@ -33,6 +34,7 @@ import docopt
 import yaml
 import collections
 import curtsies
+import re
 
 
 def query_remote(url, params):
@@ -51,7 +53,7 @@ def query_remote(url, params):
         req.raise_for_status()
 
 
-def format_output(pkg):
+def template_output(pkg):
     """ Creates a output string from a package
     :parmans pkg: dict like object describing a package
     :returns string
@@ -74,6 +76,42 @@ def format_output(pkg):
     data["last_update"] = pkg["last_update"]
     data["build_date"] = pkg["build_date"]
     return template.format(**data)
+
+
+def format_output(fstring, pkg):
+    lookup = {
+            "%a": "arch",
+            "%B": "build_date",
+            "%b": "pkgbase",
+            "%C": "compressed_size",
+            "%c": "conflicts",
+            "%D": "depends",
+            "%d": "pkgdesc",
+            "%e": "epoch",
+            "%f": "filename",
+            "%f": "flag_date"
+            "%g": "groups",
+            "%I": "installed_size",
+            "%L": "licenses",
+            "%l": "pkgrel",
+            "%M": "mainainers",
+            "%n": "pkgname",
+            "%p": "packager",
+            "%P": "provides",
+            "%R": "replaces",
+            "%r": "repo",
+            "%U": "last_updated",
+            "%u": "url",
+            "%v": "pkgver",
+            }
+
+    tokens = set(re.findall('(%.)', fstring))
+    for token in tokens:
+        if token == "%%":
+            fstring = re.sub("%%", "%", fstring)
+        else:
+            fstring = re.sub(token, str(pkg[lookup[token]]), fstring)
+    return fstring
 
 
 def read_config(path):
@@ -149,4 +187,7 @@ if __name__ == "__main__":
             print("No results found", file=sys.stderr)
             sys.exit(1)
         pkgs = sort_by_repo(resp.parsed["results"], config)
-        print("\n\n".join(format_output(pkg) for pkg in pkgs))
+        if args["--format"]:
+            print("\n".join(format_output(args["--format"], pkg) for pkg in pkgs))
+        else:
+            print("\n\n".join(template_output(pkg) for pkg in pkgs))
