@@ -16,7 +16,7 @@ A tool to grab basic package info from archlinux.org/packages
 SYNOPSIS
 ========
 
-  kittypack [options] <pkg>
+kittypack [options] <pkg>
 
 DESCRIPTION
 ===========
@@ -38,7 +38,7 @@ OPTIONS
 FORMATTING
 ==========
 
-The output format supports the following tokens:
+The output format supports the following tokens::
 
  %%     literal %
  %a     arch
@@ -50,7 +50,7 @@ The output format supports the following tokens:
  %d     pkgdesc
  %e     epoch
  %f     filename
- %f     flag_date"
+ %f     flag_date
  %g     groups
  %I     installed_size
  %L     licenses
