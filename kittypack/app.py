@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+
 # kittypack: Grabs package info off archlinux.org/packages
 # Copyright (C) 2012  Øyvind 'Mr.Elendig' Heggstad
 
@@ -33,8 +34,7 @@ import sys
 import docopt
 import yaml
 import collections
-import curtsies
-import re
+from kittypack import fmt
 
 
 def query_remote(url, params):
@@ -52,66 +52,6 @@ def query_remote(url, params):
     else:
         req.raise_for_status()
 
-
-def template_output(pkg):
-    """ Creates a output string from a package
-    :parmans pkg: dict like object describing a package
-    :returns string
-    """
-    template = ("{repo}/{arch}/{pkgname}  {epoch}:{pkgver}-{pkgrel}{ood}\n"
-                "  Updated: {last_update}  Built: {build_date}")
-    data = {}
-    data["repo"] = curtsies.fmtstr(pkg["repo"], fg="magenta", bold=True)
-    data["arch"] = curtsies.fmtstr(pkg["arch"], fg="yellow", bold=True)
-    data["pkgname"] = curtsies.fmtstr(pkg["pkgname"], fg="green", bold=True)
-    if pkg["flag_date"]:
-        ver_colour = "red"
-        data["ood"] = curtsies.fmtstr(" <!>", fg=ver_colour)
-    else:
-        ver_colour = "green"
-        data["ood"] = ""
-    for itm in ("epoch", "pkgver", "pkgrel"):
-        # fmtstr doesn't like ints
-        data[itm] = curtsies.fmtstr(str(pkg[itm]), fg=ver_colour, bold=True)
-    data["last_update"] = pkg["last_update"]
-    data["build_date"] = pkg["build_date"]
-    return template.format(**data)
-
-
-def format_output(fstring, pkg):
-    lookup = {
-            "%a": "arch",
-            "%B": "build_date",
-            "%b": "pkgbase",
-            "%C": "compressed_size",
-            "%c": "conflicts",
-            "%D": "depends",
-            "%d": "pkgdesc",
-            "%e": "epoch",
-            "%f": "filename",
-            "%f": "flag_date",
-            "%g": "groups",
-            "%I": "installed_size",
-            "%L": "licenses",
-            "%l": "pkgrel",
-            "%M": "mainainers",
-            "%n": "pkgname",
-            "%p": "packager",
-            "%P": "provides",
-            "%R": "replaces",
-            "%r": "repo",
-            "%U": "last_updated",
-            "%u": "url",
-            "%v": "pkgver",
-            }
-
-    tokens = set(re.findall('(%.)', fstring))
-    for token in tokens:
-        if token == "%%":
-            fstring = re.sub("%%", "%", fstring)
-        else:
-            fstring = re.sub(token, str(pkg[lookup[token]]), fstring)
-    return fstring
 
 
 def read_config(path):
@@ -131,7 +71,7 @@ def sort_by_repo(pkgs, conf):
     return sorted(pkgs, key=sortkey)
 
 
-if __name__ == "__main__":
+def main():
     args = docopt.docopt(__doc__)  # will sys.exit(1) if invalid usage
 
     if args["--config"]:
@@ -188,6 +128,6 @@ if __name__ == "__main__":
             sys.exit(1)
         pkgs = sort_by_repo(resp.parsed["results"], config)
         if args["--format"]:
-            print("\n".join(format_output(args["--format"], pkg) for pkg in pkgs))
+            print("\n".join(fmt.format_output(args["--format"], pkg) for pkg in pkgs))
         else:
-            print("\n\n".join(template_output(pkg) for pkg in pkgs))
+            print("\n\n".join(fmt.template_output(pkg) for pkg in pkgs))

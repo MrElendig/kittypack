@@ -17,10 +17,11 @@ Dependencies
 | python-docopt
 | python-yaml
 | python-curtsies
+| python-setuptools
 
 Instalation
 ============
-| python3 setup.py install
+| pip --user install .
 | or better, use your distributions build system
 
 Usage
