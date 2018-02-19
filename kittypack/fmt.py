@@ -66,7 +66,7 @@ def format_output(fstring, pkg):
             "%I": "installed_size",
             "%L": "licenses",
             "%l": "pkgrel",
-            "%M": "mainainers",
+            "%M": "maintainers",
             "%n": "pkgname",
             "%p": "packager",
             "%P": "provides",

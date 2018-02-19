@@ -55,7 +55,7 @@ The output format supports the following tokens::
  %I     installed_size
  %L     licenses
  %l     pkgrel
- %M     mainainers
+ %M     maintainers
  %n     pkgname
  %p     packager
  %P     provides
