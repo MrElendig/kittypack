@@ -44,7 +44,7 @@ def query_remote(url, params):
     :type params: dict
     :returns namedtuple: (parsed=dict, raw=string, url=string)
     """
-    req = requests.get(url, params=params)
+    req = requests.get(url, params=params, timeout=10)
     if req.status_code == requests.codes.ok:
         fields = ("parsed", "raw", "url")
         Package = collections.namedtuple("Package", fields)
@@ -112,6 +112,10 @@ def main():
         print("Error recieved from remote:", file=sys.stderr)
         print(e.args)
         sys.exit(4)
+    except requests.exceptions.Timeout as e:
+        print("Timed out connecting to the server")
+        print(e)
+        sys.exit(5)
 
     if not resp.parsed["valid"]:
         err = ("Hmm, archlinux.org didn't like my search.\n"
