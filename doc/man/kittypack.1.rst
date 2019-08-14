@@ -7,9 +7,9 @@ A tool to grab basic package info from archlinux.org/packages
 -------------------------------------------------------------
 
 :Author: Øyvind Heggstad <mrelendig@har-ikkje.net>
-:Date: 2014-03-21
+:Date: 2019-08-12
 :Copyright: AGPLv3
-:Version: 0.1
+:Version: 0.2.3
 :Manual section: 1
 :Manual group: None
 
@@ -28,12 +28,12 @@ On the program is a picture of bugs in python.
 OPTIONS
 =======
 
--r, --repository=<repo>     Search only in <repo>
--a, --architecture=<arch>   Search only in <arch>
--f, --format=<fstring>      Use custom format string
+-r, --repository <repo>     Search only in <repo>
+-a, --architecture <arch>   Search only in <arch>
+-f, --format <format>       Use custom format string
 -j, --json                  Print the raw json
--c, --config=<config>       Path to the config [default: /etc/kittypack.conf]
--h, --help                  Show the help screen
+-c, --config <config>       Path to the config [default: /etc/kittypack.conf]
+--help                  Show the help screen
 
 FORMATTING
 ==========

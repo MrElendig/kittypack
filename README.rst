@@ -14,9 +14,8 @@ Dependencies
 ============
 | python 3.x
 | python-requests
-| python-docopt
+| python-click
 | python-yaml
-| python-curtsies
 | python-setuptools
 
 Instalation
@@ -30,12 +29,12 @@ Usage
 kittypack [options] <pkg>
 
 Options:
-  -r, --repository=<repo>     Search only in <repo>
-  -a, --architecture=<arch>   Search only in <arch>
-  -f, --format=<fstring>      Use custom format string
+  -r, --repository <repo>     Search only in <repo>
+  -a, --architecture <arch>   Search only in <arch>
+  -f, --format <fstring>      Use custom format string
   -j, --json                  Print the raw json
-  -c, --config=<config>       Path to the config [default: /etc/kittypack.conf]
-  -h, --help                  Show this screen
+  -c, --config <config>       Path to the config [default: /etc/kittypack.conf]
+      --help                  Show this screen
 
 The output format supports the following tokens::
 

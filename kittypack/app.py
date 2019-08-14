@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # kittypack: Grabs package info off archlinux.org/packages
-# Copyright (C) 2012  Øyvind 'Mr.Elendig' Heggstad
+# Copyright (C) 2019  Øyvind 'Mr.Elendig' Heggstad
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -31,7 +31,7 @@ Options:
 
 import requests
 import sys
-import docopt
+import click
 import yaml
 import collections
 from kittypack import fmt
@@ -71,38 +71,41 @@ def sort_by_repo(pkgs, conf):
     return sorted(pkgs, key=sortkey)
 
 
-def main():
-    args = docopt.docopt(__doc__)  # will sys.exit(1) if invalid usage
-
-    if args["--config"]:
-        config_path = args["--config"]
-    else:
-        config_path = "/etc/kittypack.conf"
+@click.command()
+@click.option('--repository', '-r', help='Search only in <repo>', metavar='<repo>')
+@click.option('--architecture', '-a', help='Search only in <arch>', metavar='<arch>')
+@click.option('--format', '-f', help='Use custom format string', metavar='<format>')
+@click.option('--json', '-j', is_flag=True, help='Print the raw json')
+@click.option('--config', '-c', type=click.Path(), default='/etc/kittypack.conf',
+    show_default=True, help="Path to the config", metavar='<path>')
+@click.argument('package')
+def main(repository, architecture, format, json, config, package):
+    """kittypack: A tool to grab basic package info from archlinux.org/packages"""
     try:
-        config = read_config(config_path)
+        config = read_config(config)
     except OSError as e:
         print("Could not read the configuration file:\n  {}".format(e),
               file=sys.stderr)
         sys.exit(3)
 
     params = {}
-    params['name'] = args["<pkg>"]
-    if args["--repository"]:
+    params['name'] = package
+    if repository:
         try:
-            repo = args["--repository".lower()]
+            repo = repository.lower()
             params["repo"] = config["repos"][repo]["r_name"]
         except KeyError:
             error_text = "error: {repo} is not a valid repository".format(
-                repo=args["--repository"])
+                repo=repository)
             print(error_text, file=sys.stderr)
             sys.exit(1)
 
-    if args["--architecture"]:
-        if args["--architecture"] in config["archs"]:
-            params["arch"] = args["--architecture"]
+    if architecture:
+        if architecture in config["archs"]:
+            params["arch"] = architecture
         else:
             error_text = "error: {arch} is not a valid architecture".format(
-                arch=args["--architecture"])
+                arch=architecture)
             print(error_text, file=sys.stderr)
             sys.exit(1)
 
@@ -124,14 +127,14 @@ def main():
         print(err.format(resp.url, resp.raw), file=sys.stderr)
         sys.exit(4)
 
-    if args["--json"]:
+    if json:
         print(resp.raw)
     else:
         if not resp.parsed["results"]:
             print("No results found", file=sys.stderr)
             sys.exit(1)
         pkgs = sort_by_repo(resp.parsed["results"], config)
-        if args["--format"]:
-            print("\n".join(fmt.format_output(args["--format"], pkg) for pkg in pkgs))
+        if format:
+            click.echo("\n".join(fmt.format_output(format, pkg) for pkg in pkgs))
         else:
-            print("\n\n".join(fmt.template_output(pkg) for pkg in pkgs))
+            click.echo("\n\n".join(fmt.template_output(pkg) for pkg in pkgs))

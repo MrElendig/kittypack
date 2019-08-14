@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # kittypack: Grabs package info off archlinux.org/packages
-# Copyright (C) 2012  Øyvind 'Mr.Elendig' Heggstad
+# Copyright (C) 2019  Øyvind 'Mr.Elendig' Heggstad
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -17,7 +17,7 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 # Various formaters etc for kittypack
-import curtsies
+import click
 import re
 
 def template_output(pkg):
@@ -28,18 +28,18 @@ def template_output(pkg):
     template = ("{repo}/{arch}/{pkgname}  {epoch}:{pkgver}-{pkgrel}{ood}\n"
                 "  Updated: {last_update}  Built: {build_date}")
     data = {}
-    data["repo"] = curtsies.fmtstr(pkg["repo"], fg="magenta", bold=True)
-    data["arch"] = curtsies.fmtstr(pkg["arch"], fg="yellow", bold=True)
-    data["pkgname"] = curtsies.fmtstr(pkg["pkgname"], fg="green", bold=True)
+    data["repo"] = click.style(pkg["repo"], fg="magenta", bold=True)
+    data["arch"] = click.style(pkg["arch"], fg="yellow", bold=True)
+    data["pkgname"] = click.style(pkg["pkgname"], fg="green", bold=True)
     if pkg["flag_date"]:
         ver_colour = "red"
-        data["ood"] = curtsies.fmtstr(" <!>", fg=ver_colour)
+        data["ood"] = click.style(" <!>", fg=ver_colour)
     else:
         ver_colour = "green"
         data["ood"] = ""
     for itm in ("epoch", "pkgver", "pkgrel"):
         # fmtstr doesn't like ints
-        data[itm] = curtsies.fmtstr(str(pkg[itm]), fg=ver_colour, bold=True)
+        data[itm] = click.style(str(pkg[itm]), fg=ver_colour, bold=True)
     data["last_update"] = pkg["last_update"]
     data["build_date"] = pkg["build_date"]
     return template.format(**data)

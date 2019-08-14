@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # kittypack: Grabs package info off archlinux.org/packages
-# Copyright (C) 2012  Øyvind 'Mr.Elendig' Heggstad
+# Copyright (C) 2019  Øyvind 'Mr.Elendig' Heggstad
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as
@@ -21,7 +21,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="kittypack",
-    version="0.2.1",
+    version="0.2.3",
     description="A silly little tool to get info from archlinux.org/packages",
     url="https://github.com/MrElendig/kittypack",
     author="Øyvind \"Mr.Elendig\" Heggstad",
@@ -38,7 +38,7 @@ setup(
 
     keywords="sample setuptools development",
     packages=["kittypack"],
-    install_requires=["docopt", "requests", "pyyaml", "curtsies",
+    install_requires=["Click", "requests", "pyyaml", "curtsies",
         "setuptools"],
     package_data={
         "kittypack": ["kittypack.conf"],
