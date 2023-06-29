@@ -21,7 +21,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="kittypack",
-    version="0.2.3",
+    version="0.2.4",
     description="A silly little tool to get info from archlinux.org/packages",
     url="https://github.com/MrElendig/kittypack",
     author="Øyvind \"Mr.Elendig\" Heggstad",
